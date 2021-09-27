@@ -56,20 +56,14 @@ class CsvStorage implements Connection
                     return $person;
             });
 
+
         $personsData = $stmt->process($reader);
-        $data = [];
-        foreach ($personsData as $personsDatum) {
-            $data [] = [
-                $personsDatum[0],
-                $personsDatum[1],
-                $personsDatum[2],
-                $personsDatum[3],
-            ];
-        }
+
+        $copy = json_decode(json_encode($personsData), true);
 
         $writer = Writer::createFromPath($this->filename, 'w+');
         $writer->setDelimiter(';');
-        $writer->insertall($data);
+        $writer->insertall($copy);
 
     }
 }
