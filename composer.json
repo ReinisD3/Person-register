@@ -1,0 +1,11 @@
+{
+  "name": "reinis/covid-19app",
+  "require": {
+    "league/csv": "^9.7"
+  },
+  "autoload" : {
+    "psr-4":{
+      "App\\" : "app/"
+    }
+  }
+}
