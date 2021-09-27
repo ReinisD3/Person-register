@@ -2,28 +2,27 @@
 
 require_once 'vendor/autoload.php';
 
-use App\DataOperations;
+
 use App\PersonData;
+use App\StorageConnections\CsvStorage;
 
 if (!isset($_SESSION)) {
     session_start();
 }
 
-$allRecords = DataOperations::loadData('data.csv');
+$storage = new CsvStorage('Data/data.csv');
 
 
 if (isset($_GET['searchPersonCode'])) {
     if (strlen($_GET['searchPersonCode']) !== 12) {
         $errCodeSearch = 'Please enter your Person Code format : 123xxx-123xx';
     } else {
-        $match = DataOperations::searchByPersonCode($_GET['searchPersonCode'], $allRecords);
+        $searchedPerson = $storage->getByPersonalCode($_GET['searchPersonCode']);
+
         if (isset($_POST['delete'])) {
-            $allRecords = DataOperations::deleteRecord($match, $allRecords);
-            DataOperations::savePeopleData($allRecords, 'data.csv');
+            $storage->delete($searchedPerson);
         }
-
     }
-
 }
 
 if (isset($_POST['submit'])) {
@@ -36,8 +35,13 @@ if (isset($_POST['submit'])) {
     if (strlen($_POST['personCode']) !== 12) {
         $errCode = 'Please enter your Person Code format : 123xxx-123xx';
     } else {
-        $allRecords [] = new PersonData($_POST['name'], $_POST['surname'], $_POST['personCode'], $_POST['comment']);
-        DataOperations::savePeopleData($allRecords, 'data.csv');
+        $storage->save(new PersonData(
+            $_POST['name'],
+            $_POST['surname'],
+            $_POST['personCode'],
+            $_POST['comment']
+        ));
+
     }
 }
 
